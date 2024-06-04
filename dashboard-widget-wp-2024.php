@@ -7,8 +7,14 @@
  * Author: Edson Vieira Demetrio
  */
 
- if( ! defined('ABSPATH')){
+if( ! defined('ABSPATH')){
     exit;
- }
+}
 
- 
+ //Functions plugin
+ $template = plugin_dir_path( __FILE__ ) . 'inc/functions.php';
+ if(file_exists($template)){
+   include_once $template;
+ }else{
+   echo '<p>Template is not exist</p>';
+ }
