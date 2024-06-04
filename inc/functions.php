@@ -52,3 +52,10 @@ function cdw_get_data_db(){
     $res = $wpdb->get_results("SELECT * FROM `{$visits_table}`", ARRAY_A);
     return rest_ensure_response( $res );
 }
+
+//Load scripts React
+function cdw_enqueue_scripts(){
+    wp_enqueue_script( 'cdw_react_script', plugins_url( 'build/index.js', __FILE__ ), array(), '1.0.0', true );
+	wp_enqueue_style( 'cdw_react_style', 	plugins_url( 'build/style.css', 	 __FILE__ ), array(), '1.0.0' );
+}
+add_action('wp_enqueue_scripts', 'cdw_enqueue_scripts');
