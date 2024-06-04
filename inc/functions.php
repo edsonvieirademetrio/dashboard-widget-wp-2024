@@ -38,6 +38,17 @@ add_action( 'rest_api_init', 'cdw_register_rest_route' );
 //Select DB data
 function cdw_get_data_db(){
     global $wpdb;
-    $res = $wpdb->get_results("SELECT * FROM `wp_visits_table`", ARRAY_A);
+    $visits_table = $wpdb->prefix . 'visits_table';
+    $check_visits_table_exists = $wpdb->get_var("SHOW TABLES LIKE '$visits_table'");
+    if(!$check_visits_table_exists){
+        $sql = "CREATE TABLE IF NOT EXISTS `{$visits_table}`(
+                `id` BIGINT(20) NO NULL AUTO_INCREMENT,
+                `date` DATE NOT NULL,
+                `visitors_count`INT(11) NOT NULL,
+                PRIMARY KEY (`id`)
+                ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci";
+        $wpdb->query($sql);
+    }
+    $res = $wpdb->get_results("SELECT * FROM `{$visits_table}`", ARRAY_A);
     return rest_ensure_response( $res );
 }
