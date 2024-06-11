@@ -36,26 +36,22 @@ function cdw_register_rest_route(){
 add_action( 'rest_api_init', 'cdw_register_rest_route' );
 
 //Select DB data
-function cdw_get_data_db(){
+function cdw_get_data() {
     global $wpdb;
-    $visits_table = $wpdb->prefix . 'visits_table';
-    $check_visits_table_exists = $wpdb->get_var("SHOW TABLES LIKE '$visits_table'");
-    if(!$check_visits_table_exists){
-        $sql = "CREATE TABLE IF NOT EXISTS `{$visits_table}`(
-                `id` BIGINT(20) NO NULL AUTO_INCREMENT,
-                `date` DATE NOT NULL,
-                `visitors_count`INT(11) NOT NULL,
-                PRIMARY KEY (`id`)
-                ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci";
-        $wpdb->query($sql);
-    }
-    $res = $wpdb->get_results("SELECT * FROM `{$visits_table}`", ARRAY_A);
-    return rest_ensure_response( $res );
+    $results = $wpdb->get_results( "SELECT * FROM `wp_visits_table`", ARRAY_A );
+
+    return rest_ensure_response( $results );
 }
 
 //Load scripts React
-function cdw_enqueue_scripts(){
-    wp_enqueue_script( 'cdw_react_script', plugins_url( 'build/index.js', __FILE__ ), array(), '1.0.0', true );
-	wp_enqueue_style( 'cdw_react_style', 	plugins_url( 'build/style.css', 	 __FILE__ ), array(), '1.0.0' );
+function cdw_enqueue_admin_scripts($hook) {
+    if ( 'index.php' !== $hook ) {
+        return;
+    }
+
+    wp_enqueue_script("react_plugin_js", plugin_dir_url(__FILE__) . "../build/index.js", [ "wp-element"], "0.1.0", true);
+
+    wp_enqueue_style("react_plugin_css", plugin_dir_url(__FILE__) . "../build/index.css");
 }
-add_action('wp_enqueue_scripts', 'cdw_enqueue_scripts');
+add_action( 'admin_enqueue_scripts', 'cdw_enqueue_admin_scripts' );
+
